@@ -1,4 +1,10 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using AccountOwnerServer.Contracts;
+using AccountOwnerServer.Entities;
+using AccountOwnerServer.LoggerService;
+using AccountOwnerServer.Repository;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -27,6 +33,21 @@ namespace AccountOwnerServer.WebApi.Extensions
             {
 
             });
+        }
+        public static void ConfigureLoggerService(this IServiceCollection services)
+        {
+            services.AddSingleton<ILoggerManager, LoggerManager>();
+        }
+
+        public static void ConfigureSqlServerContext(this IServiceCollection services, IConfiguration config)
+        {
+            var connectionString = config["connectionStr:connectionString"];
+            services.AddDbContext<RepositoryContext>(o => o.UseSqlServer(connectionString));
+        }
+
+        public static void ConfigureRepositoryWrapper(this IServiceCollection services)
+        {
+            services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
         }
     }
 }
